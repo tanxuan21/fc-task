@@ -7,7 +7,7 @@ import { promises as fs } from "fs";
 export class Tasks {
     url: string = path.join(process.cwd(), 'tasks');
     data: Task_Class_interface = { ids: [], data: {} }
-    constructor(){
+    constructor() {
         this.read();
     }
     async read() {
@@ -28,7 +28,16 @@ export class Tasks {
         if (save) this.save();
     }
     modify_task(id: string, newTask: Task_interface) {
-        if (!this.collision(id)) return false
+        if (!this.collision(id)) return false;
+        this.data.data[id] = newTask;
+        this.save(); return true;
+
+    }
+    get_task(id: string) {
+        if (this.collision(id)) {
+            return this.data.data[id];
+        }
+        return null;
     }
     // 对标文件系统
     async save() {

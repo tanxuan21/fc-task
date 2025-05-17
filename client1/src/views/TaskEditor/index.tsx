@@ -5,29 +5,45 @@ import { useEffect, useState } from "react";
 import { addMinutes, format } from "date-fns";
 import { API_URL } from "../Config";
 import axios from "axios";
-// 如果传递进来taskid,就是编辑当前任务.否则就是新建
-interface props {
-  task_id: string,
-}
-export default ({ task_id = '' }: props) => {
+import { get_taskeditor_params } from "./taskstatus";
+
+export default () => {
   const route = useNavigate();
   const [task, setTask] = useState<Task_interface>({
     task_name: "新任务", start_time: new Date(), end_time: addMinutes(new Date(), 60), remaind_offset_minutes: 0
   });
   useEffect(() => {
-    if (task_id === '') return
+    const params = get_taskeditor_params()
+    if (params === null) {
+      console.warn("空参数,不合法的任务编辑")
+      route("/dayplan"); return;
+    }
     (async function () {
-      const body: POST_task = { operation: 'get', data: { id: task_id } }
-      const data = await axios.post(`${API_URL}/api/task/`, body);
-      console.log(data);
+      // 修改时,从后端获取被改的task信息
+      if (params.operation === "modify") {
+        const body: POST_task = { operation: "get", data: { id: params.task_id } }
+        const data:Task_interface = (await axios.post(`${API_URL}/api/task/`, body)).data;
+        setTask({...data,start_time:new Date(data.start_time),end_time:new Date(data.end_time)})
+      }// 添加任务时,从params读.添加的哪个小时的
+      else if (params.operation === "add") {
+        setTask({ ...task, start_time: params.start_time, end_time: addMinutes(params.start_time, 60) })
+      }
     })()
   }, [])
   const save_task = async () => {
-    const body: POST_task = {
-      operation: 'save',
-      data: task,
+    const params = get_taskeditor_params()
+    if (params === null) {
+      console.warn("空参数,不合法的任务编辑,保存提交拒绝")
+      route("/dayplan"); return;
     }
-    axios.post(`${API_URL}/api/task/`, body)
+    if (params.operation === 'add') {
+      const body: POST_task = { operation: 'add', data: task, }
+      axios.post(`${API_URL}/api/task/`, body)
+    }
+    else if (params.operation === 'modify') {
+      const body: POST_task = { operation: "modify", data: task, task_id: params.task_id };
+      axios.post(`${API_URL}/api/task/`, body)
+    }
   }
   return <div className={styles['container']}>
     <header>创建任务</header>

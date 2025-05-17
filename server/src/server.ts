@@ -29,16 +29,17 @@ app.get(`/api/taskid/`, (req, res) => {
 app.post(`/api/task/`, (req, res) => {
   const body = req.body as POST_task;
   console.log(body);
-  
+
   if (body.operation === 'get') {
-    res.json({
-      data: `请求${body.data.id}数据`
-    })
+    res.json(TasksInstance.get_task(body.data.id))
   }
-  else if (body.operation === 'save') {
+  else if (body.operation === 'add') {
     TasksInstance.add_task(body.data)
     res.json({
-      success:true,
+      success: true,
     })
+  }
+  else if (body.operation === 'modify') {
+    TasksInstance.modify_task(body.task_id, body.data)
   }
 })
