@@ -1,0 +1,4 @@
+packages:
+  - "client1"
+  - "common"
+  - "server"

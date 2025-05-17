@@ -1,0 +1,16 @@
+{
+  "name": "@fc-task/common",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/types.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

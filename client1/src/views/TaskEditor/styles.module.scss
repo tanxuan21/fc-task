@@ -1,0 +1,28 @@
+@use "@/styles/components/input" as *;
+
+.container {
+    width: 500px;
+    height: 100%;
+
+    .main {
+        display: flex;
+        flex-direction: column;
+        gap:10px;
+        .flex-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .time-input{
+            @include input();width: 300px;
+        }
+        .textarea{
+            @include textarea();
+        }
+    }
+
+    .input {
+        @include input();
+    }
+
+}
